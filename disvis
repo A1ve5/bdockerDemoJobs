@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# Simple bdocker demo
+# Using Disvis - https://hub.docker.com/r/indigodatacloudapps/disvis/
+#
+# 2017 lalves@lip.pt
+#
+## 
+
+
+echo "### CLEAN UP LEFTOVERS\n"
+
+rm -fr out
+rm -f script.out
+
+
+echo "### WRITE SCRIPT: This script will run inside the container.\n"
+
+cat <<EOT > ~/script.sh
+#!/bin/bash
+
+echo -e "\e[31m>>> Running in:\e[0m"
+hostname
+echo -e "\e[31m>>> Running as:\e[0m" 
+id
+echo -e "\e[31m>>> Working dir:\e[0m" 
+pwd
+echo ""
+
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/local/lib64
+export EX_DIR=/usr/local/disvis/test-cases/PRE5-PUP2-complex
+
+disvis /usr/local/disvis/test-cases/PRE5-PUP2-complex/O14250.pdb\
+ /usr/local/disvis/test-cases/PRE5-PUP2-complex/Q9UT97.pdb\
+ /usr/local/disvis/test-cases/PRE5-PUP2-complex/restraints.dat\
+ -p 2 -a 20.0 -vs 2 -d /tmp/out
+
+cat /tmp/out/*.out
+
+EOT
+chmod +x ~/script.sh
+
+
+echo "### PULL IMAGE: bdocker pull trinitronx\n"
+bdocker pull indigodatacloudapps/disvis
+
+
+echo "### RUN IMAGE: bdocker run container\n"
+bdocker run\
+ -w /tmp/\
+ -v ~/:/tmp/\
+ indigodatacloudapps/disvis\
+ '/bin/bash -c "./script.sh > script.out 2>&1"'
+
