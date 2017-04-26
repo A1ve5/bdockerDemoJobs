@@ -25,21 +25,20 @@ echo -e "\e[31m>>> Running as (id):\e[0m"
 id
 echo -e "\e[31m>>> Working dir (pwd):\e[0m" 
 pwd
-echo ""
 
 export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/usr/local/lib64
 export EX_DIR=/usr/local/disvis/test-cases/PRE5-PUP2-complex
+
+echo -e "\n\e[31m>>> Running Disvis:\e[0m"
 
 disvis /usr/local/disvis/test-cases/PRE5-PUP2-complex/O14250.pdb\
  /usr/local/disvis/test-cases/PRE5-PUP2-complex/Q9UT97.pdb\
  /usr/local/disvis/test-cases/PRE5-PUP2-complex/restraints.dat\
  -p 2 -a 20.0 -vs 2 -d /tmp/out
 
-for d in $(ls /tmp/out/*.out)
- do 
-  echo -e "\e[31mOutput File: "$d" \e[0m"
-  cat $d
-done
+echo -e "\n\e[31m>>> Output files generated:\e[0m"
+ls -l out/
+cat out/*.out
 
 EOT
 chmod +x ~/script.sh
