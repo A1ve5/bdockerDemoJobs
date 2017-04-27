@@ -39,8 +39,8 @@ disvis /usr/local/disvis/test-cases/PRE5-PUP2-complex/O14250.pdb\
 echo -e "\n\e[31m>>> Output files generated:\e[0m"
 ls -l out/
 cat out/*.out
-
 EOT
+
 chmod +x ~/script.sh
 
 
@@ -54,4 +54,3 @@ bdocker run\
  -v ~/:/tmp/\
  indigodatacloudapps/disvis\
  '/bin/bash -c "./script.sh > script.out 2>&1"'
-
