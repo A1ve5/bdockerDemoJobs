@@ -8,11 +8,9 @@
 ## 
 
 
-echo "### CLEAN UP LEFTOVERS\n"
+echo "### Clean up leftover files from previous runs\n"
 
-rm -fr out
-rm -f script.out
-
+rm -f script.*
 
 echo "### WRITE SCRIPT: This script will run inside the container.\n"
 
@@ -36,21 +34,34 @@ disvis /usr/local/disvis/test-cases/PRE5-PUP2-complex/O14250.pdb\
  /usr/local/disvis/test-cases/PRE5-PUP2-complex/restraints.dat\
  -p 2 -a 20.0 -vs 2 -d /tmp/out
 
-echo -e "\n\e[31m>>> Output files generated:\e[0m"
+echo -e "\n\e[31m>>> Output generated:\e[0m"
 ls -l out/
 cat out/*.out
-EOT
 
+rm -fr out
+echo "I'm DONE!"
+
+EOT
 chmod +x ~/script.sh
 
-
-echo "### PULL IMAGE: bdocker pull trinitronx\n"
+echo -e "\n### PULL IMAGE: bdocker pull disvis\n"
 bdocker pull indigodatacloudapps/disvis
 
-
-echo "### RUN IMAGE: bdocker run container\n"
-bdocker run\
+echo -e "\n### RUN IMAGE: bdocker run container\n"
+bdocker run -d\
  -w /tmp/\
  -v ~/:/tmp/\
  indigodatacloudapps/disvis\
  '/bin/bash -c "./script.sh > script.out 2>&1"'
+
+sleep 5
+
+echo -e "\n### INFO ON RUNNING CONTAINERS: bdocker ps\n"
+bdocker ps
+
+echo -e "\n### waiting until it's DONE"
+tail -f script.out | while read LOGLINE
+do
+   [[ "${LOGLINE}" == *"I'm DONE!"* ]] && pkill -P $$ tail
+done
+
